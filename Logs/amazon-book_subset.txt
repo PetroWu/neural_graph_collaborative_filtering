@@ -1,0 +1,88 @@
+===================
+--dataset amazon-book --regs [1e-5] --embed_size 64 --layer_size [64,64,64] --lr 0.0005 --save_flag 1 --pretrain 0 --batch_size 1024 --epoch 200 --verbose 50 --node_dropout [0.1] --mess_dropout [0.1,0.1,0.1]
+Epoch 0 [52.2s]: train==[275.90628=275.88012 + 0.00000]
+Epoch 9 [44.5s + 20.3s]: train==[102.95320=102.92190 + 0.03132 + 0.00000], recall=[0.02087, 0.07101], precision=[0.00811, 0.00564], hit=[0.12485, 0.30972], ndcg=[0.03864, 0.08382]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/64-64-64/l0.0005_r1e-05
+Epoch 19 [44.6s + 18.2s]: train==[64.05980=64.01617 + 0.04361 + 0.00000], recall=[0.02478, 0.07869], precision=[0.00965, 0.00630], hit=[0.14473, 0.33390], ndcg=[0.04412, 0.09228]
+W1123 20:18:51.695398 139637794862848 deprecation.py:323] From /home/wudong/anaconda3/lib/python3.7/site-packages/tensorflow/python/training/saver.py:960: remove_checkpoint (from tensorflow.python.training.checkpoint_management) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use standard file APIs to delete files with this prefix.
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/64-64-64/l0.0005_r1e-05
+Epoch 29 [44.9s + 24.1s]: train==[43.31696=43.26057 + 0.05639 + 0.00000], recall=[0.02603, 0.08178], precision=[0.01008, 0.00664], hit=[0.15144, 0.34302], ndcg=[0.04513, 0.09514]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/64-64-64/l0.0005_r1e-05
+Epoch 39 [44.6s + 17.3s]: train==[31.30583=31.23791 + 0.06792 + 0.00000], recall=[0.02578, 0.08279], precision=[0.01000, 0.00670], hit=[0.14948, 0.34663], ndcg=[0.04518, 0.09608]
+Epoch 49 [44.6s + 17.1s]: train==[24.41126=24.33276 + 0.07851 + 0.00000], recall=[0.02585, 0.08323], precision=[0.01027, 0.00679], hit=[0.15271, 0.34846], ndcg=[0.04603, 0.09699]
+Epoch 50 [44.7s]: train==[23.95308=23.87359 + 0.00000]
+Epoch 59 [44.6s + 17.8s]: train==[19.46725=19.37907 + 0.08818 + 0.00000], recall=[0.02590, 0.08329], precision=[0.01027, 0.00683], hit=[0.15157, 0.34720], ndcg=[0.04649, 0.09750]
+Epoch 69 [44.5s + 17.9s]: train==[15.96953=15.87240 + 0.09713 + 0.00000], recall=[0.02566, 0.08221], precision=[0.01022, 0.00678], hit=[0.15005, 0.34530], ndcg=[0.04612, 0.09694]
+Epoch 79 [44.5s + 17.4s]: train==[13.76275=13.65739 + 0.10537 + 0.00000], recall=[0.02615, 0.08251], precision=[0.01037, 0.00678], hit=[0.15252, 0.34511], ndcg=[0.04708, 0.09733]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/64-64-64/l0.0005_r1e-05
+Epoch 89 [44.5s + 17.6s]: train==[11.82423=11.71117 + 0.11306 + 0.00000], recall=[0.02652, 0.08198], precision=[0.01042, 0.00673], hit=[0.15334, 0.34555], ndcg=[0.04713, 0.09698]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/64-64-64/l0.0005_r1e-05
+Epoch 99 [44.5s + 18.5s]: train==[10.33827=10.21800 + 0.12026 + 0.00000], recall=[0.02668, 0.08114], precision=[0.01050, 0.00670], hit=[0.15359, 0.34239], ndcg=[0.04831, 0.09766]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/64-64-64/l0.0005_r1e-05
+Epoch 100 [44.6s]: train==[10.20579=10.08484 + 0.00000]
+Epoch 109 [44.5s + 18.0s]: train==[9.19839=9.07146 + 0.12693 + 0.00000], recall=[0.02641, 0.08135], precision=[0.01038, 0.00667], hit=[0.15169, 0.34175], ndcg=[0.04747, 0.09677]
+Epoch 119 [44.5s + 18.2s]: train==[8.35608=8.22283 + 0.13324 + 0.00000], recall=[0.02616, 0.08204], precision=[0.01033, 0.00672], hit=[0.15182, 0.34517], ndcg=[0.04672, 0.09699]
+Epoch 129 [44.6s + 17.7s]: train==[7.44495=7.30578 + 0.13917 + 0.00000], recall=[0.02600, 0.08139], precision=[0.01032, 0.00668], hit=[0.15163, 0.34334], ndcg=[0.04677, 0.09666]
+Epoch 139 [44.6s + 19.2s]: train==[7.03832=6.89360 + 0.14473 + 0.00000], recall=[0.02600, 0.08078], precision=[0.01025, 0.00664], hit=[0.15030, 0.33998], ndcg=[0.04637, 0.09567]
+Epoch 149 [44.5s + 18.0s]: train==[6.45091=6.30095 + 0.14996 + 0.00000], recall=[0.02618, 0.08053], precision=[0.01032, 0.00660], hit=[0.15074, 0.34201], ndcg=[0.04656, 0.09581]
+Early stopping is trigger at step: 5 log:0.02617581380614076
+Best Iter=[9]@[6997.6]	recall=[0.02668	0.04413	0.05816	0.07070	0.08114], precision=[0.01050	0.00891	0.00790	0.00724	0.00670], hit=[0.15359	0.22551	0.27401	0.31276	0.34239], ndcg=[0.04831	0.06605	0.07869	0.08913	0.09766]
+
+==================
+--dataset amazon-book --regs [1e-5] --embed_size 128 --layer_size [64,64,64] --lr 0.0005 --save_flag 1 --pretrain 0 --batch_size 1024 --epoch 200 --verbose 50 --node_dropout [0.1] --mess_dropout [0.1,0.1,0.1] --alg_type gcn
+Epoch 0 [54.6s]: train==[238.67950=238.48168 + 0.00000]
+Epoch 9 [47.0s + 20.0s]: train==[76.75687=76.26308 + 0.49382 + 0.00000], recall=[0.01724, 0.06101], precision=[0.00713, 0.00512], hit=[0.11022, 0.28401], ndcg=[0.03341, 0.07516]
+save the weights in path:  weights/amazon-book/ngcf_norm_gcn_l3/64-64-64/l0.0005_r1e-05
+Epoch 19 [47.1s + 17.8s]: train==[50.08153=49.47609 + 0.60543 + 0.00000], recall=[0.01986, 0.06614], precision=[0.00798, 0.00554], hit=[0.12270, 0.29978], ndcg=[0.03748, 0.08124]
+W1124 22:44:36.887883 139928487556864 deprecation.py:323] From /home/wudong/anaconda3/lib/python3.7/site-packages/tensorflow/python/training/saver.py:960: remove_checkpoint (from tensorflow.python.training.checkpoint_management) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use standard file APIs to delete files with this prefix.
+save the weights in path:  weights/amazon-book/ngcf_norm_gcn_l3/64-64-64/l0.0005_r1e-05
+Epoch 29 [47.0s + 17.8s]: train==[38.06110=37.38143 + 0.67967 + 0.00000], recall=[0.01916, 0.06600], precision=[0.00800, 0.00567], hit=[0.12130, 0.29712], ndcg=[0.03607, 0.07998]
+Epoch 39 [46.9s + 17.3s]: train==[30.93137=30.26340 + 0.66799 + 0.00000], recall=[0.01987, 0.06758], precision=[0.00820, 0.00572], hit=[0.12162, 0.30187], ndcg=[0.03605, 0.08074]
+save the weights in path:  weights/amazon-book/ngcf_norm_gcn_l3/64-64-64/l0.0005_r1e-05
+Epoch 49 [46.8s + 18.8s]: train==[26.17584=25.47387 + 0.70197 + 0.00000], recall=[0.02011, 0.06619], precision=[0.00814, 0.00556], hit=[0.12244, 0.29623], ndcg=[0.03654, 0.07968]
+save the weights in path:  weights/amazon-book/ngcf_norm_gcn_l3/64-64-64/l0.0005_r1e-05
+Epoch 50 [46.9s]: train==[25.88323=25.18278 + 0.00000]
+Epoch 59 [46.9s + 19.3s]: train==[22.36435=21.68176 + 0.68260 + 0.00000], recall=[0.01941, 0.06457], precision=[0.00797, 0.00549], hit=[0.11706, 0.29053], ndcg=[0.03533, 0.07818]
+Epoch 69 [47.4s + 19.6s]: train==[19.44995=18.75856 + 0.69138 + 0.00000], recall=[0.01984, 0.06634], precision=[0.00812, 0.00564], hit=[0.12067, 0.29541], ndcg=[0.03618, 0.07992]
+Epoch 79 [47.0s + 19.3s]: train==[17.66093=16.99305 + 0.66787 + 0.00000], recall=[0.01954, 0.06538], precision=[0.00792, 0.00553], hit=[0.11877, 0.29047], ndcg=[0.03559, 0.07861]
+Epoch 89 [47.0s + 18.2s]: train==[15.82553=15.21844 + 0.60710 + 0.00000], recall=[0.01983, 0.06551], precision=[0.00816, 0.00557], hit=[0.12111, 0.29459], ndcg=[0.03651, 0.07991]
+Epoch 99 [46.8s + 17.4s]: train==[14.56263=13.99401 + 0.56861 + 0.00000], recall=[0.01996, 0.06600], precision=[0.00815, 0.00555], hit=[0.12016, 0.29623], ndcg=[0.03682, 0.08026]
+Early stopping is trigger at step: 5 log:0.01996301951614555
+Best Iter=[4]@[4900.1]	recall=[0.02011	0.03315	0.04523	0.05620	0.06619], precision=[0.00814	0.00695	0.00632	0.00590	0.00556], hit=[0.12244	0.18177	0.22900	0.26572	0.29623], ndcg=[0.03654	0.05056	0.06192	0.07141	0.07968]
+
+==================
+separate parameter spaces
+--dataset amazon-book --regs [1e-5] --embed_size 64 --layer_size [64,64,64] --lr 0.0005 --save_flag 1 --pretrain 0 --batch_size 1024 --epoch 200 --verbose 50 --node_dropout [0.1] --mess_dropout [0.1,0.1,0.1]
+Epoch 0 [67.4s]: train==[280.87836=280.85247 + 0.00000]
+Epoch 9 [66.7s + 21.1s]: train==[115.56279=115.53274 + 0.03009 + 0.00000], recall=[0.01831, 0.06225], precision=[0.00716, 0.00501], hit=[0.11263, 0.28465], ndcg=[0.03447, 0.07587]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/64-64-64/l0.0005_r1e-05
+Epoch 19 [63.0s + 20.4s]: train==[78.62521=78.58522 + 0.04002 + 0.00000], recall=[0.02242, 0.07356], precision=[0.00882, 0.00588], hit=[0.13517, 0.31940], ndcg=[0.04132, 0.08737]
+W1127 21:05:40.489970 139642733631232 deprecation.py:323] From /home/wudong/anaconda3/envs/rec/lib/python3.6/site-packages/tensorflow/python/training/saver.py:960: remove_checkpoint (from tensorflow.python.training.checkpoint_management) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use standard file APIs to delete files with this prefix.
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/64-64-64/l0.0005_r1e-05
+Epoch 29 [63.3s + 20.5s]: train==[53.24793=53.19566 + 0.05232 + 0.00000], recall=[0.02371, 0.07724], precision=[0.00929, 0.00620], hit=[0.14106, 0.33276], ndcg=[0.04299, 0.09123]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/64-64-64/l0.0005_r1e-05
+Epoch 39 [62.5s + 21.1s]: train==[37.79735=37.73301 + 0.06435 + 0.00000], recall=[0.02398, 0.07951], precision=[0.00951, 0.00638], hit=[0.14365, 0.34017], ndcg=[0.04299, 0.09253]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/64-64-64/l0.0005_r1e-05
+Epoch 49 [62.6s + 21.9s]: train==[28.23229=28.15676 + 0.07553 + 0.00000], recall=[0.02446, 0.08041], precision=[0.00954, 0.00645], hit=[0.14530, 0.34061], ndcg=[0.04345, 0.09337]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/64-64-64/l0.0005_r1e-05
+Epoch 50 [62.6s]: train==[27.54118=27.46454 + 0.00000]
+Epoch 59 [62.4s + 19.4s]: train==[22.03075=21.94471 + 0.08603 + 0.00000], recall=[0.02465, 0.08094], precision=[0.00971, 0.00648], hit=[0.14574, 0.34080], ndcg=[0.04437, 0.09414]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/64-64-64/l0.0005_r1e-05
+Epoch 69 [65.9s + 20.1s]: train==[17.79306=17.69731 + 0.09573 + 0.00000], recall=[0.02490, 0.08028], precision=[0.00961, 0.00648], hit=[0.14479, 0.33751], ndcg=[0.04353, 0.09306]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/64-64-64/l0.0005_r1e-05
+Epoch 79 [63.0s + 19.8s]: train==[14.78912=14.68438 + 0.10474 + 0.00000], recall=[0.02518, 0.08026], precision=[0.00980, 0.00648], hit=[0.14625, 0.33840], ndcg=[0.04501, 0.09429]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/64-64-64/l0.0005_r1e-05
+Epoch 89 [63.3s + 21.5s]: train==[12.49420=12.38116 + 0.11306 + 0.00000], recall=[0.02441, 0.08025], precision=[0.00955, 0.00645], hit=[0.14321, 0.33758], ndcg=[0.04407, 0.09352]
+Epoch 99 [62.1s + 19.8s]: train==[10.77022=10.64939 + 0.12083 + 0.00000], recall=[0.02495, 0.08100], precision=[0.00966, 0.00650], hit=[0.14524, 0.33947], ndcg=[0.04400, 0.09364]
+Epoch 100 [63.2s]: train==[10.81585=10.69428 + 0.00000]
+Epoch 109 [62.5s + 22.0s]: train==[9.44678=9.31871 + 0.12807 + 0.00000], recall=[0.02460, 0.08100], precision=[0.00977, 0.00654], hit=[0.14562, 0.33871], ndcg=[0.04459, 0.09414]
+Epoch 119 [62.9s + 19.5s]: train==[8.51650=8.38168 + 0.13483 + 0.00000], recall=[0.02482, 0.08104], precision=[0.00981, 0.00652], hit=[0.14530, 0.33954], ndcg=[0.04488, 0.09415]
+Epoch 129 [64.9s + 22.1s]: train==[7.84958=7.70843 + 0.14114 + 0.00000], recall=[0.02464, 0.08037], precision=[0.00971, 0.00648], hit=[0.14498, 0.33783], ndcg=[0.04462, 0.09392]
+Early stopping is trigger at step: 5 log:0.02463957424920181
+Best Iter=[7]@[8512.5]	recall=[0.02518	0.04310	0.05735	0.06904	0.08026], precision=[0.00980	0.00847	0.00759	0.00694	0.00648], hit=[0.14625	0.22115	0.26914	0.30465	0.33840], ndcg=[0.04501	0.06272	0.07521	0.08512	0.09429]
