@@ -86,3 +86,44 @@ Epoch 119 [62.9s + 19.5s]: train==[8.51650=8.38168 + 0.13483 + 0.00000], recall=
 Epoch 129 [64.9s + 22.1s]: train==[7.84958=7.70843 + 0.14114 + 0.00000], recall=[0.02464, 0.08037], precision=[0.00971, 0.00648], hit=[0.14498, 0.33783], ndcg=[0.04462, 0.09392]
 Early stopping is trigger at step: 5 log:0.02463957424920181
 Best Iter=[7]@[8512.5]	recall=[0.02518	0.04310	0.05735	0.06904	0.08026], precision=[0.00980	0.00847	0.00759	0.00694	0.00648], hit=[0.14625	0.22115	0.26914	0.30465	0.33840], ndcg=[0.04501	0.06272	0.07521	0.08512	0.09429]
+
+==================
+separate parameter spaces
+--dataset amazon-book --regs [1e-5] --embed_size 45 --layer_size [45,45,45] --lr 0.0005 --save_flag 1 --pretrain 0 --batch_size 1024 --epoch 200 --verbose 50 --node_dropout [0.1] --mess_dropout [0.1,0.1,0.1]
+Epoch 0 [59.3s]: train==[298.13757=298.11175 + 0.00000]
+Epoch 9 [54.1s + 20.2s]: train==[127.43948=127.41048 + 0.02902 + 0.00000], recall=[0.01657, 0.05690], precision=[0.00637, 0.00456], hit=[0.10339, 0.26888], ndcg=[0.03154, 0.07047]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/45-45-45/l0.0005_r1e-05
+Epoch 19 [53.6s + 19.3s]: train==[91.29095=91.25524 + 0.03572 + 0.00000], recall=[0.02191, 0.06964], precision=[0.00834, 0.00558], hit=[0.13257, 0.30719], ndcg=[0.04076, 0.08456]
+W1127 21:03:06.117058 139832676210432 deprecation.py:323] From /home/wudong/anaconda3/envs/rec/lib/python3.6/site-packages/tensorflow/python/training/saver.py:960: remove_checkpoint (from tensorflow.python.training.checkpoint_management) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use standard file APIs to delete files with this prefix.
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/45-45-45/l0.0005_r1e-05
+Epoch 29 [53.5s + 19.3s]: train==[65.96147=65.91603 + 0.04546 + 0.00000], recall=[0.02356, 0.07573], precision=[0.00922, 0.00609], hit=[0.14112, 0.32605], ndcg=[0.04303, 0.09012]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/45-45-45/l0.0005_r1e-05
+Epoch 39 [53.4s + 19.2s]: train==[48.71336=48.65774 + 0.05564 + 0.00000], recall=[0.02415, 0.07739], precision=[0.00949, 0.00622], hit=[0.14277, 0.33207], ndcg=[0.04365, 0.09147]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/45-45-45/l0.0005_r1e-05
+Epoch 49 [53.4s + 19.3s]: train==[37.58056=37.51528 + 0.06529 + 0.00000], recall=[0.02401, 0.07806], precision=[0.00944, 0.00631], hit=[0.14346, 0.33384], ndcg=[0.04322, 0.09183]
+Epoch 50 [53.7s]: train==[36.33777=36.27159 + 0.00000]
+Epoch 59 [53.7s + 18.9s]: train==[30.07375=29.99936 + 0.07439 + 0.00000], recall=[0.02440, 0.07943], precision=[0.00971, 0.00639], hit=[0.14631, 0.33890], ndcg=[0.04391, 0.09294]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/45-45-45/l0.0005_r1e-05
+Epoch 69 [56.1s + 18.9s]: train==[24.40126=24.31828 + 0.08296 + 0.00000], recall=[0.02409, 0.07887], precision=[0.00958, 0.00636], hit=[0.14467, 0.33517], ndcg=[0.04337, 0.09192]
+Epoch 79 [53.9s + 18.7s]: train==[20.73353=20.64268 + 0.09084 + 0.00000], recall=[0.02447, 0.07958], precision=[0.00965, 0.00637], hit=[0.14416, 0.33650], ndcg=[0.04391, 0.09286]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/45-45-45/l0.0005_r1e-05
+Epoch 89 [53.3s + 19.2s]: train==[17.76682=17.66856 + 0.09826 + 0.00000], recall=[0.02473, 0.07950], precision=[0.00964, 0.00641], hit=[0.14536, 0.33739], ndcg=[0.04425, 0.09318]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/45-45-45/l0.0005_r1e-05
+Epoch 99 [53.4s + 19.1s]: train==[15.68759=15.58246 + 0.10514 + 0.00000], recall=[0.02478, 0.07971], precision=[0.00982, 0.00645], hit=[0.14587, 0.33777], ndcg=[0.04434, 0.09331]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/45-45-45/l0.0005_r1e-05
+Epoch 100 [53.3s]: train==[15.67210=15.56630 + 0.00000]
+Epoch 109 [53.6s + 18.9s]: train==[13.98389=13.87224 + 0.11164 + 0.00000], recall=[0.02469, 0.07968], precision=[0.00972, 0.00644], hit=[0.14555, 0.33821], ndcg=[0.04453, 0.09365]
+Epoch 119 [53.9s + 20.1s]: train==[12.89030=12.77267 + 0.11764 + 0.00000], recall=[0.02499, 0.07965], precision=[0.00986, 0.00644], hit=[0.14562, 0.33840], ndcg=[0.04478, 0.09365]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/45-45-45/l0.0005_r1e-05
+Epoch 129 [53.5s + 19.5s]: train==[11.50455=11.38121 + 0.12333 + 0.00000], recall=[0.02520, 0.07828], precision=[0.00986, 0.00637], hit=[0.14631, 0.33523], ndcg=[0.04509, 0.09317]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/45-45-45/l0.0005_r1e-05
+Epoch 139 [56.5s + 19.9s]: train==[10.70588=10.57725 + 0.12864 + 0.00000], recall=[0.02532, 0.07827], precision=[0.00996, 0.00638], hit=[0.14707, 0.33473], ndcg=[0.04520, 0.09288]
+save the weights in path:  weights/amazon-book/ngcf_norm_ngcf_l3/45-45-45/l0.0005_r1e-05
+Epoch 149 [53.5s + 20.1s]: train==[9.90939=9.77568 + 0.13371 + 0.00000], recall=[0.02458, 0.07734], precision=[0.00967, 0.00632], hit=[0.14302, 0.33384], ndcg=[0.04446, 0.09260]
+Epoch 150 [53.7s]: train==[10.04070=9.90650 + 0.00000]
+Epoch 159 [50.8s + 18.4s]: train==[9.42607=9.28760 + 0.13847 + 0.00000], recall=[0.02460, 0.07707], precision=[0.00973, 0.00631], hit=[0.14365, 0.33194], ndcg=[0.04407, 0.09199]
+Epoch 169 [51.6s + 18.4s]: train==[9.02385=8.88085 + 0.14300 + 0.00000], recall=[0.02453, 0.07735], precision=[0.00964, 0.00632], hit=[0.14346, 0.33333], ndcg=[0.04377, 0.09187]
+Epoch 179 [52.9s + 18.9s]: train==[8.33448=8.18714 + 0.14733 + 0.00000], recall=[0.02503, 0.07668], precision=[0.00982, 0.00629], hit=[0.14498, 0.33200], ndcg=[0.04411, 0.09145]
+
