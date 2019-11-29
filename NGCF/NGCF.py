@@ -78,13 +78,22 @@ class NGCF(object):
             3. gcmc: defined in 'Graph Convolutional Matrix Completion', KDD2018;
         """
         if self.alg_type in ['ngcf']:
-            self.ua_embeddings, self.ia_embeddings = self._create_ngcfd_embed()
+            self.ua_embeddings, self.ia_embeddings = self._create_ngcf_embed()
 
         elif self.alg_type in ['ngcfd']:
-            self.ua_embeddings, self.ia_embeddings = self._create_ngcf_embed()
+            self.ua_embeddings, self.ia_embeddings = self._create_ngcfd_embed()
+
+        elif self.alg_type in ['ngcfs']:
+            self.ua_embeddings, self.ia_embeddings = self._create_ngcfs_embed()
 
         elif self.alg_type in ['gcn']:
             self.ua_embeddings, self.ia_embeddings = self._create_gcn_embed()
+
+        elif self.alg_type in ['lightgcn']:
+            self.ua_embeddings, self.ia_embeddings = self._create_lightgcn_embed()
+
+        elif self.alg_type in ['lightngcf']:
+            self.ua_embeddings, self.ia_embeddings = self._create_lightngcf_embed()
 
         elif self.alg_type in ['gcmc']:
             self.ua_embeddings, self.ia_embeddings = self._create_gcmc_embed()
@@ -161,6 +170,8 @@ class NGCF(object):
             all_weights['b_mlp_%d' % k] = tf.Variable(
                 initializer([1, self.weight_size_list[k+1]]), name='b_mlp_%d' % k)
 
+            all_weights['lgcn_alpha_%d' %k] = tf.Variable(initializer([1]), name='lgcn_alpha_%d' % k)
+
         return all_weights
 
     def _split_A_hat(self, X):
@@ -236,6 +247,49 @@ class NGCF(object):
             item_bi_embeddings = tf.nn.leaky_relu(
                 tf.matmul(item_bi_embeddings, self.weights['item_W_bi_%d' % k]) + self.weights['item_b_bi_%d' % k])
             bi_embeddings = tf.concat([user_bi_embeddings, item_bi_embeddings], axis=0)
+
+            # non-linear activation.
+            ego_embeddings = sum_embeddings + bi_embeddings
+
+            # message dropout.
+            ego_embeddings = tf.nn.dropout(ego_embeddings, 1 - self.mess_dropout[k])
+
+            # normalize the distribution of embeddings.
+            norm_embeddings = tf.math.l2_normalize(ego_embeddings, axis=1)
+
+            all_embeddings += [norm_embeddings]
+
+        all_embeddings = tf.concat(all_embeddings, 1)
+        u_g_embeddings, i_g_embeddings = tf.split(all_embeddings, [self.n_users, self.n_items], 0)
+        return u_g_embeddings, i_g_embeddings
+
+    def _create_ngcfs_embed(self):
+        # Generate a set of adjacency sub-matrix.
+        if self.node_dropout_flag:
+            # node dropout.
+            A_fold_hat = self._split_A_hat_node_dropout(self.norm_adj)
+        else:
+            A_fold_hat = self._split_A_hat(self.norm_adj)
+
+        ego_embeddings = tf.concat([self.weights['user_embedding'], self.weights['item_embedding']], axis=0)
+
+        all_embeddings = [ego_embeddings]
+
+        for k in range(0, self.n_layers):
+
+            temp_embed = []
+            for f in range(self.n_fold):
+                temp_embed.append(tf.sparse_tensor_dense_matmul(A_fold_hat[f], ego_embeddings))
+
+            # sum messages of neighbors.
+            side_embeddings = tf.concat(temp_embed, 0)
+            # transformed sum messages of neighbors.
+            sum_embeddings = tf.matmul(side_embeddings, self.weights['W_gc_0']) + self.weights['b_gc_0']
+
+            # bi messages of neighbors.
+            bi_embeddings = tf.multiply(ego_embeddings, side_embeddings)
+            # transformed bi messages of neighbors.
+            bi_embeddings = tf.matmul(bi_embeddings, self.weights['W_bi_0']) + self.weights['b_bi_0']
 
             # non-linear activation.
             ego_embeddings = sum_embeddings + bi_embeddings
@@ -341,6 +395,82 @@ class NGCF(object):
         u_g_embeddings, i_g_embeddings = tf.split(all_embeddings, [self.n_users, self.n_items], 0)
         return u_g_embeddings, i_g_embeddings
 
+    def _create_lightngcf_embed(self):
+        # Generate a set of adjacency sub-matrix.
+        if self.node_dropout_flag:
+            # node dropout.
+            A_fold_hat = self._split_A_hat_node_dropout(self.norm_adj)
+        else:
+            A_fold_hat = self._split_A_hat(self.norm_adj)
+
+        ego_embeddings = tf.concat([self.weights['user_embedding'], self.weights['item_embedding']], axis=0)
+
+        # all_embeddings = [ego_embeddings]
+        sum_embeddings = None
+
+        for k in range(0, self.n_layers):
+
+            temp_embed = []
+            for f in range(self.n_fold):
+                temp_embed.append(tf.sparse_tensor_dense_matmul(A_fold_hat[f], ego_embeddings))
+
+            # sum messages of neighbors.
+            side_embeddings = tf.concat(temp_embed, 0)
+            # transformed sum messages of neighbors.
+            # sum_embeddings = tf.nn.leaky_relu(
+            #     tf.matmul(side_embeddings, self.weights['W_gc_%d' % k]) + self.weights['b_gc_%d' % k])
+
+            # bi messages of neighbors.
+            bi_embeddings = tf.multiply(ego_embeddings, side_embeddings)
+            # transformed bi messages of neighbors.
+            # bi_embeddings = tf.nn.leaky_relu(
+            #     tf.matmul(bi_embeddings, self.weights['W_bi_%d' % k]) + self.weights['b_bi_%d' % k])
+
+            # non-linear activation.
+            ego_embeddings = side_embeddings + bi_embeddings
+
+            # message dropout.
+            ego_embeddings = tf.nn.dropout(ego_embeddings, 1 - self.mess_dropout[k])
+
+            # normalize the distribution of embeddings.
+            norm_embeddings = tf.math.l2_normalize(ego_embeddings, axis=1)
+            if k == 0:
+                sum_embeddings = self.weights['lgcn_alpha_%d' % k] * norm_embeddings
+            else:
+                sum_embeddings += self.weights['lgcn_alpha_%d' % k] * norm_embeddings
+
+            # all_embeddings += [norm_embeddings]
+
+        # all_embeddings = tf.concat(all_embeddings, 1)
+        u_g_embeddings, i_g_embeddings = tf.split(sum_embeddings, [self.n_users, self.n_items], 0)
+        return u_g_embeddings, i_g_embeddings
+
+    def _create_lightgcn_embed(self):
+        A_fold_hat = self._split_A_hat(self.norm_adj)
+        embeddings = tf.concat([self.weights['user_embedding'], self.weights['item_embedding']], axis=0)
+
+        # all_embeddings = [embeddings]
+        sum_embeddings = None
+
+        for k in range(0, self.n_layers):
+            temp_embed = []
+            for f in range(self.n_fold):
+                temp_embed.append(tf.sparse_tensor_dense_matmul(A_fold_hat[f], embeddings))
+
+            embeddings = tf.concat(temp_embed, 0)
+            # embeddings = tf.nn.leaky_relu(tf.matmul(embeddings, self.weights['W_gc_%d' %k]) + self.weights['b_gc_%d' %k])
+            embeddings = tf.nn.dropout(embeddings, 1 - self.mess_dropout[k])
+            if k == 0:
+                sum_embeddings = self.weights['lgcn_alpha_%d' % k] * embeddings
+            else:
+                sum_embeddings += self.weights['lgcn_alpha_%d' % k] * embeddings
+
+            # all_embeddings += [embeddings]
+
+        # all_embeddings = tf.concat(all_embeddings, 1)
+        u_g_embeddings, i_g_embeddings = tf.split(sum_embeddings, [self.n_users, self.n_items], 0)
+        return u_g_embeddings, i_g_embeddings
+
     def _create_gcmc_embed(self):
         A_fold_hat = self._split_A_hat(self.norm_adj)
 
@@ -418,6 +548,8 @@ def load_pretrained_data():
 
 if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu_id)
+    print("============>>>>>>>")
+    print(args)
 
     config = dict()
     config['n_users'] = data_generator.n_users
