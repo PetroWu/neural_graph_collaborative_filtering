@@ -5,19 +5,17 @@ Wang Xiang et al. Neural Graph Collaborative Filtering. In SIGIR 2019.
 
 @author: Xiang Wang (xiangwang@u.nus.edu)
 '''
-import os
-import pickle as pk
 import numpy as np
 import random as rd
 import scipy.sparse as sp
 from time import time
 
 class Data(object):
-    def __init__(self, path, batch_size, num_epochs, dataset):
+    def __init__(self, path, batch_size):
         self.path = path
         self.batch_size = batch_size
-        self.num_epochs = num_epochs
-        self.dataset = dataset
+        self.mode = "train"
+        self.test_batch_iter = 0
 
         train_file = path + '/train.txt'
         test_file = path + '/test.txt'
@@ -82,25 +80,7 @@ class Data(object):
 
                     uid, test_items = items[0], items[1:]
                     self.test_set[uid] = test_items
-
-    def load_train_temp(self):
-        pkl_path = 'Data/' + self.dataset + '/train_temp/'
-        if not os.path.exists(pkl_path):
-            os.mkdir(pkl_path)
-        pkl_name = 'temp_' + str(self.num_epochs) + '_' + str(self.batch_size) + '.pkl'
-        if not os.path.exists(pkl_path + pkl_name):
-            dataset = []
-            for epoch in range(self.num_epochs):
-                data_epoch = []
-                n_batch = self.n_train // self.batch_size + 1
-                for idx in range(n_batch):
-                    users, pos_items, neg_items = self.sample()
-                    data_epoch.append([users, pos_items, neg_items])
-                dataset.append(data_epoch)
-            pk.dump(dataset, open(pkl_path + pkl_name, 'wb'))
-        else:
-            dataset = pk.load(open(pkl_path + pkl_name, 'rb'))
-        return dataset
+        self.test_users = self.test_set.keys()
 
     def get_adj_mat(self):
         try:
@@ -203,6 +183,58 @@ class Data(object):
             neg_items += sample_neg_items_for_u(u, 1)
 
         return users, pos_items, neg_items
+
+    def set_mode(self, mode):
+        self.mode = mode
+        if self.mode == 'test':
+            self.test_batch_iter = 0
+
+    def sample_iterator(self):
+        if self.mode == "test":
+            u_batch_size = self.batch_size * 2
+            start = self.test_batch_iter * u_batch_size
+            end = (self.test_batch_iter + 1) * u_batch_size
+            user_batch = self.test_users[start: end]
+            item_batch = range(self.n_items)
+            yield user_batch, item_batch, []
+        else:
+            if self.batch_size <= self.n_users:
+                users = rd.sample(self.exist_users, self.batch_size)
+            else:
+                users = [rd.choice(self.exist_users) for _ in range(self.batch_size)]
+
+            def sample_pos_items_for_u(u, num):
+                pos_items = self.train_items[u]
+                n_pos_items = len(pos_items)
+                pos_batch = []
+                while True:
+                    if len(pos_batch) == num: break
+                    pos_id = np.random.randint(low=0, high=n_pos_items, size=1)[0]
+                    pos_i_id = pos_items[pos_id]
+
+                    if pos_i_id not in pos_batch:
+                        pos_batch.append(pos_i_id)
+                return pos_batch
+
+            def sample_neg_items_for_u(u, num):
+                neg_items = []
+                while True:
+                    if len(neg_items) == num: break
+                    neg_id = np.random.randint(low=0, high=self.n_items,size=1)[0]
+                    if neg_id not in self.train_items[u] and neg_id not in neg_items:
+                        neg_items.append(neg_id)
+                return neg_items
+
+            def sample_neg_items_for_u_from_pools(u, num):
+                neg_items = list(set(self.neg_pools[u]) - set(self.train_items[u]))
+                return rd.sample(neg_items, num)
+
+            pos_items, neg_items = [], []
+            for u in users:
+                pos_items += sample_pos_items_for_u(u, 1)
+                neg_items += sample_neg_items_for_u(u, 1)
+
+            yield users, pos_items, neg_items
 
     def get_num_users_items(self):
         return self.n_users, self.n_items

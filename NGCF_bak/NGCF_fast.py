@@ -59,8 +59,10 @@ class NGCF(object):
         #          ... please use the 'node_dropout_flag' to indicate whether use such technique.
         #          message dropout (adopted on the convolution operations).
         self.node_dropout_flag = args.node_dropout_flag
-        self.node_dropout = tf.placeholder(tf.float32, shape=[None])
-        self.mess_dropout = tf.placeholder(tf.float32, shape=[None])
+        self.node_dropout = tf.constant(eval(args.node_dropout), shape=[None])
+        self.mess_dropout = tf.constant(eval(args.mess_dropout), shape=[None])
+        # self.node_dropout = tf.placeholder(tf.float32, shape=[None])
+        # self.mess_dropout = tf.placeholder(tf.float32, shape=[None])
 
         """
         *********************************************************
@@ -456,21 +458,15 @@ if __name__ == '__main__':
     stopping_step = 0
     should_stop = False
 
-    td1 = time()
-    train_dataset = data_generator.load_train_temp()
-    print(">>>Load training temp", time() - td1)
     for epoch in range(args.epoch):
         t1 = time()
         loss, mf_loss, emb_loss, reg_loss = 0., 0., 0., 0.
         n_batch = data_generator.n_train // args.batch_size + 1
 
         for idx in range(n_batch):
-            # users, pos_items, neg_items = data_generator.sample()
-            users, pos_items, neg_items = train_dataset[epoch][idx]
+            users, pos_items, neg_items = data_generator.sample()
             _, batch_loss, batch_mf_loss, batch_emb_loss, batch_reg_loss = sess.run([model.opt, model.loss, model.mf_loss, model.emb_loss, model.reg_loss],
                                feed_dict={model.users: users, model.pos_items: pos_items,
-                                          model.node_dropout: eval(args.node_dropout),
-                                          model.mess_dropout: eval(args.mess_dropout),
                                           model.neg_items: neg_items})
             loss += batch_loss
             mf_loss += batch_mf_loss
