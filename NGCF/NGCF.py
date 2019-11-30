@@ -80,6 +80,9 @@ class NGCF(object):
         if self.alg_type in ['ngcf']:
             self.ua_embeddings, self.ia_embeddings = self._create_ngcf_embed()
 
+        elif self.alg_type in ['lightgcn']:
+            self.ua_embeddings, self.ia_embeddings = self._create_lightgcn_embed()
+
         elif self.alg_type in ['gcn']:
             self.ua_embeddings, self.ia_embeddings = self._create_gcn_embed()
 
@@ -144,6 +147,8 @@ class NGCF(object):
                 initializer([self.weight_size_list[k], self.weight_size_list[k+1]]), name='W_mlp_%d' % k)
             all_weights['b_mlp_%d' % k] = tf.Variable(
                 initializer([1, self.weight_size_list[k+1]]), name='b_mlp_%d' % k)
+
+            all_weights['alpha_%d' %k] = tf.Variable(initializer([1]), name='alpha_%d' % k)
 
         return all_weights
 
@@ -222,6 +227,29 @@ class NGCF(object):
 
         all_embeddings = tf.concat(all_embeddings, 1)
         u_g_embeddings, i_g_embeddings = tf.split(all_embeddings, [self.n_users, self.n_items], 0)
+        return u_g_embeddings, i_g_embeddings
+
+    def _create_lightgcn_embed(self):
+        A_fold_hat = self._split_A_hat(self.norm_adj)
+        embeddings = tf.concat([self.weights['user_embedding'], self.weights['item_embedding']], axis=0)
+
+        # all_embeddings = [embeddings]
+        final_embeddings = self.weights['alpha'] * embeddings
+
+        for k in range(0, self.n_layers):
+            temp_embed = []
+            for f in range(self.n_fold):
+                temp_embed.append(tf.sparse_tensor_dense_matmul(A_fold_hat[f], embeddings))
+
+            embeddings = tf.concat(temp_embed, 0)
+            # embeddings = tf.nn.leaky_relu(tf.matmul(embeddings, self.weights['W_gc_%d' %k]) + self.weights['b_gc_%d' %k])
+            embeddings = tf.nn.dropout(embeddings, 1 - self.mess_dropout[k])
+
+            # all_embeddings += [embeddings]
+            final_embeddings += self.weights['alpha_%d' %k] * embeddings
+
+        # all_embeddings = tf.concat(all_embeddings, 1)
+        u_g_embeddings, i_g_embeddings = tf.split(final_embeddings, [self.n_users, self.n_items], 0)
         return u_g_embeddings, i_g_embeddings
 
     def _create_gcn_embed(self):
@@ -323,6 +351,7 @@ def load_pretrained_data():
 
 if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu_id)
+    print(args)
 
     config = dict()
     config['n_users'] = data_generator.n_users
