@@ -131,6 +131,7 @@ class NGCF(object):
             print('using pretrained initialization')
 
         self.weight_size_list = [self.emb_dim] + self.weight_size
+        all_weights['alpha'] = tf.Variable(initializer([1]), name='alpha')
 
         for k in range(self.n_layers):
             all_weights['W_gc_%d' %k] = tf.Variable(
@@ -148,7 +149,7 @@ class NGCF(object):
             all_weights['b_mlp_%d' % k] = tf.Variable(
                 initializer([1, self.weight_size_list[k+1]]), name='b_mlp_%d' % k)
 
-            all_weights['alpha_%d' %k] = tf.Variable(initializer([1]), name='alpha_%d' % k)
+            all_weights['alpha_%d' %k] = tf.Variable(initializer([1]), name='alpha_%d' %k)
 
         return all_weights
 
