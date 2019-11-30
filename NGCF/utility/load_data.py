@@ -6,7 +6,7 @@ Wang Xiang et al. Neural Graph Collaborative Filtering. In SIGIR 2019.
 @author: Xiang Wang (xiangwang@u.nus.edu)
 '''
 import os
-import pickle as pk
+# import pickle as pk
 import numpy as np
 import random as rd
 import scipy.sparse as sp
@@ -83,28 +83,24 @@ class Data(object):
                     uid, test_items = items[0], items[1:]
                     self.test_set[uid] = test_items
 
-    def load_train_temp(self):
-        pkl_path = '../Data/' + self.dataset + '/train_temp/'
-        if not os.path.exists(pkl_path):
-            os.mkdir(pkl_path)
-        pkl_name = 'temp_' + str(self.num_epochs) + '_' + str(self.batch_size)+ '/'
-        if not os.path.exists(pkl_path + pkl_name):
-            os.mkdir(pkl_path + pkl_name)
+    def load_train_temp(self, epoch):
+        np_path = '../Data/' + self.dataset + '/train_temp/'
+        if not os.path.exists(np_path):
+            os.mkdir(np_path)
+        np_name = 'temp_' + str(self.num_epochs) + '_' + str(self.batch_size)+ '/epoch_' + str(epoch) + '.npy'
+        if not os.path.exists(np_path + np_name):
+            print("load train temp @ epoch", epoch)
             dataset = []
-            for epoch in range(self.num_epochs):
-                print("load train temp @ epoch", epoch)
-                data_epoch = []
-                n_batch = self.n_train // self.batch_size + 1
-                for idx in range(n_batch):
-                    users, pos_items, neg_items = self.sample()
-                    data_epoch.append([users, pos_items, neg_items])
-                dataset.append(data_epoch)
-                pk.dump(data_epoch, open(pkl_path + pkl_name + 'epoch_' + str(epoch) + ".pkl", 'wb'))
+            n_batch = self.n_train // self.batch_size + 1
+            for idx in range(n_batch):
+                users, pos_items, neg_items = self.sample()
+                dataset.append([users, pos_items, neg_items])
+            np.save(np_path + np_name, np.array(dataset))
         else:
-            dataset = []
-            for epoch in range(self.num_epochs):
-                data_epoch = pk.load(open(pkl_path + pkl_name + 'epoch_' + str(epoch) + ".pkl", 'rb'))
-                dataset.append(data_epoch)
+            dataset = np.load(np_path + np_name)
+            # for epoch in range(self.num_epochs):
+            #     data_epoch = pk.load(open(np_path + np_name + 'epoch_' + str(epoch) + ".pkl", 'rb'))
+            #     dataset.append(data_epoch)
         return dataset
 
     def get_adj_mat(self):

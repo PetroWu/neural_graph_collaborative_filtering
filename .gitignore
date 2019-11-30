@@ -1,5 +1,7 @@
 *.pkl
 *.npz
+*.npy
+NGCF/weights
 
 *.pyc
 *.swp
