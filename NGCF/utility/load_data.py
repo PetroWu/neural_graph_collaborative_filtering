@@ -89,7 +89,7 @@ class Data(object):
             os.mkdir(np_path)
         np_name = 'temp_' + str(self.num_epochs) + '_' + str(self.batch_size)+ '/epoch_' + str(epoch) + '.npy'
         if not os.path.exists(np_path + np_name):
-            print("load train temp @ epoch", epoch)
+            print("load train temp @ epoch", epoch, np_path + np_name)
             dataset = []
             n_batch = self.n_train // self.batch_size + 1
             for idx in range(n_batch):
