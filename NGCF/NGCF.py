@@ -81,7 +81,7 @@ class NGCF(object):
             self.ua_embeddings, self.ia_embeddings = self._create_ngcf_embed()
 
         elif self.alg_type in ['lightngcf']:
-            self.ua_embeddings, self.ia_embeddings = self._create_lightgcn_embed()
+            self.ua_embeddings, self.ia_embeddings = self._create_lightngcf_embed()
 
         elif self.alg_type in ['lightgcn']:
             self.ua_embeddings, self.ia_embeddings = self._create_lightgcn_embed()
@@ -273,7 +273,7 @@ class NGCF(object):
             norm_embeddings = tf.math.l2_normalize(ego_embeddings, axis=1)
 
             # all_embeddings += [norm_embeddings]
-            final_embeddings += self.weights['alphg_%d' %k] * norm_embeddings
+            final_embeddings += self.weights['alpha_%d' %k] * norm_embeddings
 
         # all_embeddings = tf.concat(all_embeddings, 1)
         u_g_embeddings, i_g_embeddings = tf.split(final_embeddings, [self.n_users, self.n_items], 0)
@@ -358,7 +358,7 @@ class NGCF(object):
         
         # In the first version, we implement the bpr loss via the following codes:
         # We report the performance in our paper using this implementation.
-        maxi = tf.log(tf.nn.sigmoid(pos_scores - neg_scores))
+        maxi = tf.log(tf.clip_by_value(tf.nn.sigmoid(pos_scores - neg_scores), 1e-10, 1.0))
         mf_loss = tf.negative(tf.reduce_mean(maxi))
         
         ## In the second version, we implement the bpr loss via the following codes to avoid 'NAN' loss during training:
@@ -400,7 +400,8 @@ def load_pretrained_data():
     return pretrain_data
 
 if __name__ == '__main__':
-    os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu_id)
+    # os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu_id)
+    os.environ["CUDA_VISIBLE_DEVICES"] = '0,1,2,3'
     print(args)
 
     config = dict()
@@ -559,7 +560,7 @@ if __name__ == '__main__':
             sys.exit()
 
         # print the test evaluation metrics each 10 epochs; pos:neg = 1:10.
-        if (epoch + 1) % 10 != 0:
+        if (epoch + 1) % 5 != 0:
             if args.verbose > 0 and epoch % args.verbose == 0:
                 perf_str = 'Epoch %d [%.1fs]: train==[%.5f=%.5f + %.5f]' % (
                     epoch, time() - t1, loss, mf_loss, reg_loss)
