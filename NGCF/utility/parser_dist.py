@@ -12,10 +12,10 @@ def parse_args():
     parser.add_argument('--weights_path', nargs='?', default='',
                         help='Store model path.')
 
-    parser.add_argument('--data_dir', nargs='?', default='../Data/',
+    parser.add_argument('--data_dir', nargs='?', default='../Data/amazon-book',
                         help='Input data path.')
 
-    parser.add_argument('--proj_path', nargs='?', default='',
+    parser.add_argument('--proj_path', nargs='?', default='./model',
                         help='Project path.')
 
     parser.add_argument('--n_users', type=int, default=52643,
@@ -90,10 +90,12 @@ def parse_args():
     parser.add_argument('--num_warmup_steps', type=int, default=1000,
                         help='num_warmup_steps')
 
-    parser.add_argument('--save_checkpoints_steps', type=int, default=10,
+    parser.add_argument('--save_checkpoints_steps', type=int, default=100,
                         help='save_checkpoints_steps')
 
     parser.add_argument('--keep_checkpoint_max', type=int, default=10,
                         help='keep_checkpoint_max')
 
+    parser.add_argument('--init_checkpoint', type=str, default=None,
+                        help='init_checkpoint')
     return parser.parse_args()

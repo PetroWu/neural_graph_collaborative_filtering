@@ -13,13 +13,12 @@ Ks = eval(args.Ks)
 
 
 class NGCF(object):
-    def __init__(self, data_config, users, pos_items, neg_items, pretrain_data, is_training):
+    def __init__(self, data_config, users, pos_items, neg_items, is_training):
         # argument settings
         self.model_type = 'ngcf'
         self.adj_type = args.adj_type
         self.alg_type = args.alg_type
 
-        self.pretrain_data = pretrain_data
 
         self.n_users = data_config['n_users']
         self.n_items = data_config['n_items']
@@ -30,9 +29,9 @@ class NGCF(object):
         self.n_nonzero_elems = self.norm_adj.count_nonzero()
 
         self.emb_dim = args.embed_size
-        self.batch_size = args.batch_size
 
         self.weight_size = eval(args.layer_size)
+
         self.n_layers = len(self.weight_size)
 
         self.model_type += '_%s_%s_l%d' % (self.adj_type, self.alg_type, self.n_layers)
@@ -125,18 +124,10 @@ class NGCF(object):
 
         initializer = tf.contrib.layers.xavier_initializer()
 
-        if self.pretrain_data is None:
-            all_weights['user_embedding'] = tf.Variable(initializer([self.n_users, self.emb_dim]),
+        all_weights['user_embedding'] = tf.Variable(initializer([self.n_users, self.emb_dim]),
                                                         name='user_embedding')
-            all_weights['item_embedding'] = tf.Variable(initializer([self.n_items, self.emb_dim]),
+        all_weights['item_embedding'] = tf.Variable(initializer([self.n_items, self.emb_dim]),
                                                         name='item_embedding')
-            print('using xavier initialization')
-        else:
-            all_weights['user_embedding'] = tf.Variable(initial_value=self.pretrain_data['user_embed'], trainable=True,
-                                                        name='user_embedding', dtype=tf.float32)
-            all_weights['item_embedding'] = tf.Variable(initial_value=self.pretrain_data['item_embed'], trainable=True,
-                                                        name='item_embedding', dtype=tf.float32)
-            print('using pretrained initialization')
 
         self.weight_size_list = [self.emb_dim] + self.weight_size
         all_weights['alpha'] = tf.Variable(initializer([1]), name='alpha')
@@ -359,8 +350,7 @@ class NGCF(object):
         neg_scores = tf.reduce_sum(tf.multiply(users, neg_items), axis=1)
 
         regularizer = tf.nn.l2_loss(users) + tf.nn.l2_loss(pos_items) + tf.nn.l2_loss(neg_items)
-        regularizer = regularizer / self.batch_size
-
+        regularizer = regularizer / tf.cast(tf.size(users), dtype=tf.float32)
         # In the first version, we implement the bpr loss via the following codes:
         # We report the performance in our paper using this implementation.
         maxi = tf.log(tf.nn.sigmoid(pos_scores - neg_scores))
@@ -426,7 +416,7 @@ def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
 
 
 def model_fn_builder(config, init_checkpoint, learning_rate,
-                     num_train_steps, num_warmup_steps, pretrain_data):
+                     num_train_steps, num_warmup_steps):
     """Returns `model_fn` closure for TPUEstimator."""
 
     def model_fn(features, labels, mode, params):  # pylint: disable=unused-argument
@@ -443,7 +433,7 @@ def model_fn_builder(config, init_checkpoint, learning_rate,
         is_training = (mode == tf.estimator.ModeKeys.TRAIN)
 
         model = NGCF(data_config=config, users=user_id, pos_items=item_id, neg_items=neg_id,
-                     pretrain_data=pretrain_data, is_training=is_training)
+                      is_training=is_training)
 
         total_loss = model.loss
 
@@ -474,18 +464,18 @@ def model_fn_builder(config, init_checkpoint, learning_rate,
             )
         elif mode == tf.estimator.ModeKeys.EVAL:
 
-            loss = tf.metrics.mean(values=model.mf_loss_total)
+            loss = tf.metrics.mean(values=model.loss)
             eval_metrics = {
-                    "recall": tf.metrics.recall_at_k(model.pos_items, model.batch_ratings,
-                                                     eval(args.Ks)[0]),
+                    "recall": tf.metrics.recall_at_k(model.pos_items, model.batch_ratings, k=eval(args.Ks)[0]),
+                                                     
                     "precision": tf.metrics.sparse_precision_at_k(model.pos_items, model.batch_ratings,
                                                                   eval(args.Ks)[0]),
-                    "eval_loss": loss,
+                    "eval_loss": loss 
                 }
 
             output_spec = tf.estimator.EstimatorSpec(
                 mode=mode,
-                loss=loss,
+                loss=model.loss,
                 eval_metric_ops=eval_metrics
             )
         else:
@@ -575,7 +565,7 @@ def main(_):
         train_input_fn = tf_load_data.file_based_input_fn_builder(
             input_files=train_files,
             is_training=True,
-            vocab=args.vocab,
+            vocab=args.n_items - 1,
             batch_size=args.train_batch_size)
 
         train_spec = tf.estimator.TrainSpec(
@@ -593,13 +583,13 @@ def main(_):
         eval_input_fn = tf_load_data.file_based_input_fn_builder(
             input_files=eval_files,
             is_training=False,
-            vocab=args.vocab,
+            vocab=args.n_items -1,
             batch_size=args.eval_batch_size)
 
         eval_spec = tf.estimator.EvalSpec(
             input_fn=eval_input_fn,
             steps=None,
-            throttle_secs=30
+            throttle_secs=3
         )
 
         tf.estimator.train_and_evaluate(
@@ -620,7 +610,7 @@ def main(_):
         eval_input_fn = tf_load_data.file_based_input_fn_builder(
             input_files=eval_files,
             is_training=False,
-            vocab=args.vocab,
+            vocab=args.n_items - 1,
             batch_size=args.eval_batch_size)
 
         result = estimator.evaluate(input_fn=eval_input_fn, steps=eval_steps)
@@ -645,7 +635,7 @@ def main(_):
         predict_input_fn = tf_load_data.file_based_input_fn_builder(
             input_files=predict_files,
             is_training=False,
-            vocab=args.vocab,
+            vocab=args.n_items - 1,
             batch_size=args.predict_batch_size)
 
         result = estimator.predict(input_fn=predict_input_fn)

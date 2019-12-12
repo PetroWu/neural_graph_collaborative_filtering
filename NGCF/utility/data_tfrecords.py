@@ -31,6 +31,7 @@ if __name__ == '__main__':
     with open(os.path.join(FLAGS.data_dir, FLAGS.input_file), "r") as f:
         writer = tf.python_io.TFRecordWriter(os.path.join(FLAGS.data_dir, FLAGS.output_file))
         for each in f.readlines():
+            each = each.strip()
             each = each.split(" ")
             user_id = int(each[0])
             item_ids = list(map(int, each[1:]))

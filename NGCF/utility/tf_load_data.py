@@ -19,8 +19,6 @@ def file_based_input_fn_builder(input_files, is_training, vocab, batch_size):
         # So cast all int64 to int32.
         for name in list(example.keys()):
             t = example[name]
-            if t.dtype == tf.int64:
-                t = tf.to_int32(t)
             example[name] = t
 
         return example["user_id"], example["item_ids"].values
