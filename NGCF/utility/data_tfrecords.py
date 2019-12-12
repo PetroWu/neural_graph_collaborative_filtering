@@ -33,7 +33,7 @@ if __name__ == '__main__':
         for each in f.readlines():
             each = each.split(" ")
             user_id = int(each[0])
-            item_ids = map(int, each[1:])
+            item_ids = list(map(int, each[1:]))
             feature = {'user_id': _int64_feature(user_id),
                        'item_ids': _int64_feature(item_ids)}
             # Create an example protocol buffer

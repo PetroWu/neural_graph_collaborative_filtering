@@ -1,4 +1,6 @@
 import tensorflow as tf
+import scipy.sparse as sp
+import numpy as np
 
 
 def file_based_input_fn_builder(input_files, is_training, vocab, batch_size):
@@ -68,6 +70,52 @@ def tf_random_choice(input, sample_num):
     ridxs = tf.random_shuffle(idx)[:sample_num]
     rinput = tf.gather(input, ridxs)
     return rinput
+
+
+def get_adj_mat(path, n_users, n_items):
+    try:
+        adj_mat = sp.load_npz(path + '/s_adj_mat.npz')
+        norm_adj_mat = sp.load_npz(path + '/s_norm_adj_mat.npz')
+        mean_adj_mat = sp.load_npz(path + '/s_mean_adj_mat.npz')
+
+    except Exception:
+        adj_mat, norm_adj_mat, mean_adj_mat = create_adj_mat(n_users, n_items)
+        sp.save_npz(path + '/s_adj_mat.npz', adj_mat)
+        sp.save_npz(path + '/s_norm_adj_mat.npz', norm_adj_mat)
+        sp.save_npz(path + '/s_mean_adj_mat.npz', mean_adj_mat)
+    return adj_mat, norm_adj_mat, mean_adj_mat
+
+
+def create_adj_mat(n_users, n_items):
+    adj_mat = sp.dok_matrix((n_users + n_items, n_users + n_items), dtype=np.float32)
+    adj_mat = adj_mat.tolil()
+    R = sp.dok_matrix((n_users, n_items), dtype=np.float32)
+
+    adj_mat[:n_users, n_users:] = R
+    adj_mat[n_users:, :n_users] = R.T
+    adj_mat = adj_mat.todok()
+
+    def normalized_adj_single(adj):
+        rowsum = np.array(adj.sum(1))
+
+        d_inv = np.power(rowsum, -1).flatten()
+        d_inv[np.isinf(d_inv)] = 0.
+        d_mat_inv = sp.diags(d_inv)
+
+        norm_adj = d_mat_inv.dot(adj)
+        return norm_adj.tocoo()
+
+    def check_adj_if_equal(adj):
+        dense_A = np.array(adj.todense())
+        degree = np.sum(dense_A, axis=1, keepdims=False)
+
+        temp = np.dot(np.diag(np.power(degree, -1)), dense_A)
+        return temp
+
+    norm_adj_mat = normalized_adj_single(adj_mat + sp.eye(adj_mat.shape[0]))
+    mean_adj_mat = normalized_adj_single(adj_mat)
+
+    return adj_mat.tocsr(), norm_adj_mat.tocsr(), mean_adj_mat.tocsr()
 
 
 if __name__ == '__main__':

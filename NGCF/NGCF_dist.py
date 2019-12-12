@@ -1,11 +1,15 @@
 import tensorflow as tf
 from utility.helper import *
-from utility.batch_test import *
 import collections
 from utility import optimization
 from utility import tf_load_data
 from tensorflow.python.client import device_lib
-args
+from utility.parser_dist import parse_args
+import numpy as np
+import scipy.sparse as sp
+
+args = parse_args()
+Ks = eval(args.Ks)
 
 
 class NGCF(object):
@@ -506,11 +510,34 @@ def main(_):
     print(args)
 
     config = dict()
-    config['n_users'] = data_generator.n_users
-    config['n_items'] = data_generator.n_items
+    config['n_users'] = args.n_users
+    config['n_items'] = args.n_items
 
     tf.logging.set_verbosity(tf.logging.INFO)
     tf.gfile.MakeDirs(args.proj_path)
+
+
+    """
+    *********************************************************
+    Generate the Laplacian matrix, where each entry defines the decay factor (e.g., p_ui) between two connected nodes.
+    """
+    plain_adj, norm_adj, mean_adj = tf_load_data.get_adj_mat(args.data_dir, args.n_users, args.n_items)
+
+    if args.adj_type == 'plain':
+        config['norm_adj'] = plain_adj
+        print('use the plain adjacency matrix')
+
+    elif args.adj_type == 'norm':
+        config['norm_adj'] = norm_adj
+        print('use the normalized adjacency matrix')
+
+    elif args.adj_type == 'gcmc':
+        config['norm_adj'] = mean_adj
+        print('use the gcmc adjacency matrix')
+
+    else:
+        config['norm_adj'] = mean_adj + sp.eye(mean_adj.shape[0])
+        print('use the mean adjacency matrix')
 
     mirrored_strategy = tf.contrib.distribute.MirroredStrategy(
         devices=get_available_gpus(),
@@ -518,8 +545,8 @@ def main(_):
 
     run_config = tf.estimator.RunConfig(
         model_dir=args.proj_path,
-        save_checkpoints_steps=500,
-        keep_checkpoint_max=20,
+        save_checkpoints_steps=args.save_checkpoints_steps,
+        keep_checkpoint_max=args.keep_checkpoint_max,
         train_distribute=mirrored_strategy,
         eval_distribute=mirrored_strategy
     )

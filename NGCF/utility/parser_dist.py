@@ -18,14 +18,17 @@ def parse_args():
     parser.add_argument('--proj_path', nargs='?', default='',
                         help='Project path.')
 
+    parser.add_argument('--n_users', type=int, default=52643,
+                        help='Project path.')
+
+    parser.add_argument('--n_items', type=int, default=91599,
+                        help='Project path.')
+
     parser.add_argument('--pretrain', type=int, default=0,
                         help='0: No pretrain, -1: Pretrain with the learned embeddings, 1:Pretrain with stored models.')
 
     parser.add_argument('--verbose', type=int, default=1,
                         help='Interval of evaluation.')
-
-    parser.add_argument('--epoch', type=int, default=500,
-                        help='Number of epoch.')
 
     parser.add_argument('--embed_size', type=int, default=64,
                         help='Embedding size.')
@@ -57,9 +60,6 @@ def parse_args():
     parser.add_argument('--alg_type', nargs='?', default='ngcf',
                         help='Specify the type of the graph convolutional layer from {ngcf, gcn, gcmc}.')
 
-    parser.add_argument('--gpu_id', type=int, default=0,
-                        help='0 for NAIS_prod, 1 for NAIS_concat')
-
     parser.add_argument('--node_dropout_flag', type=int, default=0,
                         help='0: Disable node dropout, 1: Activate node dropout')
 
@@ -90,5 +90,10 @@ def parse_args():
     parser.add_argument('--num_warmup_steps', type=int, default=1000,
                         help='num_warmup_steps')
 
+    parser.add_argument('--save_checkpoints_steps', type=int, default=10,
+                        help='save_checkpoints_steps')
+
+    parser.add_argument('--keep_checkpoint_max', type=int, default=10,
+                        help='keep_checkpoint_max')
 
     return parser.parse_args()
